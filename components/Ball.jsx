@@ -5,12 +5,12 @@ import { View, StyleSheet, PanResponder, ImageBackground } from 'react-native';
 
 const bgImage = require('../assets/ball_rast.png');
 
-const Ball = (/*{ xValueChange }*/) => {
-  const [position, setPosition] = useState({ x: 175, y: 590 });
+const Ball = ({ ballValueChange }) => {
+  const [position, setPosition] = useState({ x: 175, y: 490 });
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onPanResponderMove: (event, gesture) => {
-      // xValueChange(gesture.moveX);
+      ballValueChange(gesture.moveX);
       if (gesture.moveX >= 10 && gesture.moveX <= 330)
         setPosition({
           x: gesture.moveX,
@@ -19,7 +19,7 @@ const Ball = (/*{ xValueChange }*/) => {
   });
   return (
     <View
-      style={[styles.draggable, { left: position.x, top: 600}]}
+      style={[styles.draggable, { left: position.x, top: 490 }]}
       {...panResponder.panHandlers}
     >
       <ImageBackground source={bgImage} style={styles.containerImg}>
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 50,
     height: 100,
-    zIndex:10,
+    zIndex: 10,
   },
   containerImg: {
     width: 50,
