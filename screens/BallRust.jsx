@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { ImageBackground, Dimensions } from 'react-native';
 import Ball from '../components/Ball';
@@ -16,15 +15,15 @@ const StyledText = styled.Text`
   position: absolute;
   top: 130px;
   left: 5px;
-  color: #f6ff00;
+  color: #099109;
   font-size: 40px;
   font-weight: 700;
 `;
 
 const BallRust = () => {
-  const [isGameOver, setIsGameOver] = useState(true);
   const screenHeight = Dimensions.get('screen').height;
   const screenWidth = Dimensions.get('screen').width;
+  const [isGameOver, setIsGameOver] = useState(true);
   const [ballPosition, setBallPosition] = useState({ x: 175, y: 490 });
   const [score, setScore] = useState(0);
   const [bonus, setBonus] = useState(0);
@@ -32,13 +31,14 @@ const BallRust = () => {
     x: screenWidth / 2 - 25,
     y: 150,
   });
-  const [bonusVisibility, setVisibility] = useState(true);
-  const [obstaclesUp, setObstaclesUp] = useState();
+  const [obstaclesUp, setObstaclesUp] = useState(0);
   const [obstaclesWidth, setObstaclesWidht] = useState(100);
   let obstaclesTimerId;
   let bonusTimerId;
+  let counter;
   const gap = 100;
-  const obstacleSpeed = 5;
+  const obstacleSpeed = 15;
+  let renderSpeed=30;
 
   const ballValueChange = (xPosition) => {
     setBallPosition((ballPosition) => ({
@@ -49,11 +49,10 @@ const BallRust = () => {
 
   //start first obstacle
   useEffect(() => {
-    if (obstaclesUp < 853 && isGameOver) {
-      setVisibility(true);
+    if (obstaclesUp < 853&&isGameOver) {
       obstaclesTimerId = setInterval(() => {
         setObstaclesUp((obstaclesUp) => obstaclesUp + obstacleSpeed);
-      }, 30);
+      }, renderSpeed);
       return () => {
         clearInterval(obstaclesTimerId);
       };
@@ -66,29 +65,23 @@ const BallRust = () => {
         x: Math.floor(Math.random() * (350 + 1)),
       }));
     }
-  }, [obstaclesUp, isGameOver]);
+  }, [isGameOver,obstaclesUp]);
 
   useEffect(() => {
-    if (obstaclesUp < 853) {
+    if (obstaclesUp < 853&&isGameOver) {
       bonusTimerId = setInterval(() => {
         setBonusPosition((bonusPosition) => ({
           ...bonusPosition,
           y: obstaclesUp + 150,
         }));
-      }, 30);
-
+      }, renderSpeed);
       return () => {
         clearInterval(bonusTimerId);
       };
     }
   }, [obstaclesUp]);
   //check collisions
-  const gameOver = () => {
-    clearInterval(bonusTimerId);
-    clearInterval(obstaclesTimerId);
-    setIsGameOver(false);
-    setScore(0);
-  };
+
   useEffect(() => {
     if (
       (ballPosition.x <= obstaclesWidth - 25 ||
@@ -106,19 +99,30 @@ const BallRust = () => {
       bonusPosition.x >= ballPosition.x - 50 &&
       bonusPosition.x <= ballPosition.x + 50 &&
       bonusPosition.y >= ballPosition.y &&
-      bonusPosition.y <= ballPosition.y +20
-     
-      
+      bonusPosition.y <= ballPosition.y + 20
     ) {
       clearInterval(bonusTimerId);
-      console.log('bonus+1');
-      setVisibility(false);
       setBonus((bonus) => bonus + 1);
     }
   }, [bonusPosition]);
+  const gameOver = () => {
+    clearInterval(bonusTimerId);
+    clearInterval(obstaclesTimerId);
+    setScore(0);
+    setBonus(0);
+    setBonusPosition({
+      x: screenWidth / 2 - 25,
+      y: 150,
+    });
+    setObstaclesUp(0);
+    setObstaclesWidht(100);
+    setIsGameOver(false);
+  };
   const startGame = () => {
+    console.log('game start');
     setIsGameOver(true);
   };
+
   return (
     <Space source={bgImage}>
       <TouchableOpacity onPress={startGame} style={styles.button}>
@@ -138,7 +142,7 @@ const BallRust = () => {
         screenWidth={screenWidth}
         obstaclesWidth={obstaclesWidth}
       />
-      {bonusVisibility && <Bonus bonusPosition={bonusPosition} />}
+      {<Bonus bonusPosition={bonusPosition} />}
       <StyledText>Score:{score + bonus}</StyledText>
       <Ball ballValueChange={ballValueChange} />
     </Space>
@@ -146,16 +150,10 @@ const BallRust = () => {
 };
 
 const styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  //   position: 'absolute',
-  //   zIndex: 2,
-  //   magrginBottom: 24,
-  // },
   button: {
     position: 'absolute',
-    top: 60,
-    left: 5,
+    top: 100,
+    left: 185,
     width: 170,
     height: 70,
     backgroundColor: 'black',
@@ -166,14 +164,14 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     paddingTop: 10,
-    fontSize: 15,
+    fontSize: 17,
     color: 'green',
     textAlign: 'center',
   },
   buttonGameOver: {
+    paddingTop: 10,
     textAlign: 'center',
-    color: 'white',
-    fontSize: 15,
+    fontSize: 17,
     color: 'red',
   },
 });
