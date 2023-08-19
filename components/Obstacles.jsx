@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 import styled from 'styled-components/native';
 
 
@@ -8,7 +8,7 @@ const Obstacles = ({topCoordinate,gap,screenWidth,obstaclesWidth}) => {
   const Figure = styled(View)`
   position: 'absolute';
   height: 30px;
-  border: 2px solid #ffee00;
+  border: 2px solid #fffb23;
   background-color: #fffb23;
   left:0px;
   top: ${topCoordinate}px;
@@ -17,10 +17,10 @@ const Obstacles = ({topCoordinate,gap,screenWidth,obstaclesWidth}) => {
 const Figure2 = styled(View)`
   position: 'absolute';
   height: 30px;
-  border: 2px solid #09ff00;
-  background-color: #ffee00;
+  border: 2px solid #fffb23;
+  background-color: #fffb23;
   left: ${obstaclesWidth+gap}px;
-  top: ${topCoordinate}px;
+  top: ${topCoordinate-30}px;
   width: ${screenWidth-gap-obstaclesWidth}px;
 `;
   return (

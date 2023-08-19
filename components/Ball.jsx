@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled from 'styled-components/native';
+
 
 import { View, StyleSheet, PanResponder, ImageBackground } from 'react-native';
 
