@@ -33,13 +33,22 @@ export const StartScreen = ({ navigation }) => {
       console.log('Error>>>> ', error);
     }
   };
+  const getLoading = () => {
+    return <Loading />;
+  };
+  const getWebView = () => {
+    return <WebViewScreen />;
+  };
+  const getGame = () => {
+    return <BallRust />;
+  };
 
   if (isLoading.loading) {
-    return <Loading />;
+  return  getLoading();
   }
   if (isLoading.statusCode === 200) {
-    return <WebViewScreen />;
+   return getWebView();
   } else {
-    return <BallRust />;
+   return getGame();
   }
 };
