@@ -5,7 +5,9 @@ import Ball from '../components/Ball';
 import styled from 'styled-components/native';
 import Obstacles from '../components/Obstacles';
 import Bonus from '../components/Bonus';
+import ButtonStart from '../components/ButtonStart';
 const bgImage = require('../assets/RunTrack.png');
+
 const Space = styled(ImageBackground)`
   flex: 1;
   margin-top: 25px;
@@ -26,7 +28,7 @@ const BallRust = () => {
   const [isGameOver, setIsGameOver] = useState(true);
   const [ballPosition, setBallPosition] = useState({ x: 175, y: 490 });
   const [score, setScore] = useState(0);
-  const [bonus, setBonus] = useState(0);
+  const [bonus, setBonus] = useState({ quantity: 0, visibility: true });
   const [bonusPosition, setBonusPosition] = useState({
     x: screenWidth / 2 - 25,
     y: 150,
@@ -35,10 +37,9 @@ const BallRust = () => {
   const [obstaclesWidth, setObstaclesWidht] = useState(100);
   let obstaclesTimerId;
   let bonusTimerId;
-  let counter;
   const gap = 100;
   const obstacleSpeed = 15;
-  let renderSpeed=30;
+  let renderSpeed = 30;
 
   const ballValueChange = (xPosition) => {
     setBallPosition((ballPosition) => ({
@@ -46,10 +47,9 @@ const BallRust = () => {
       x: xPosition,
     }));
   };
-
   //start first obstacle
   useEffect(() => {
-    if (obstaclesUp < 853&&isGameOver) {
+    if (obstaclesUp < screenHeight && isGameOver) {
       obstaclesTimerId = setInterval(() => {
         setObstaclesUp((obstaclesUp) => obstaclesUp + obstacleSpeed);
       }, renderSpeed);
@@ -65,10 +65,10 @@ const BallRust = () => {
         x: Math.floor(Math.random() * (350 + 1)),
       }));
     }
-  }, [isGameOver,obstaclesUp]);
+  }, [isGameOver, obstaclesUp]);
 
   useEffect(() => {
-    if (obstaclesUp < 853&&isGameOver) {
+    if (obstaclesUp < screenHeight && isGameOver) {
       bonusTimerId = setInterval(() => {
         setBonusPosition((bonusPosition) => ({
           ...bonusPosition,
@@ -80,8 +80,18 @@ const BallRust = () => {
       };
     }
   }, [obstaclesUp]);
-  //check collisions
+  
+  useEffect(() => {
+    if ((obstaclesUp-150) > ballPosition.y && isGameOver) {
+      setBonus((bonus) => ({
+        ...bonus,
+        visibility: true,
+      }));
+    }
+  }, [obstaclesUp]);
 
+
+  //check collisions
   useEffect(() => {
     if (
       (ballPosition.x <= obstaclesWidth - 25 ||
@@ -99,17 +109,25 @@ const BallRust = () => {
       bonusPosition.x >= ballPosition.x - 50 &&
       bonusPosition.x <= ballPosition.x + 50 &&
       bonusPosition.y >= ballPosition.y &&
-      bonusPosition.y <= ballPosition.y + 20
+      bonusPosition.y <= ballPosition.y + 15
     ) {
       clearInterval(bonusTimerId);
-      setBonus((bonus) => bonus + 1);
+      setBonus((bonus) => ({
+        ...bonus,
+        quantity: bonus.quantity + 1,
+        visibility: false,
+      }));
     }
   }, [bonusPosition]);
+
   const gameOver = () => {
     clearInterval(bonusTimerId);
     clearInterval(obstaclesTimerId);
     setScore(0);
-    setBonus(0);
+    setBonus((bonus) => ({
+      ...bonus,
+      quantity: 0,
+    }));
     setBonusPosition({
       x: screenWidth / 2 - 25,
       y: 150,
@@ -125,54 +143,19 @@ const BallRust = () => {
 
   return (
     <Space source={bgImage}>
-      <TouchableOpacity onPress={startGame} style={styles.button}>
-        <View>
-          {isGameOver ? (
-            <Text style={styles.buttonText}>Start {`\n`}game</Text>
-          ) : (
-            <Text style={styles.buttonGameOver}>
-              Game Over {`\n`}Press to start
-            </Text>
-          )}
-        </View>
-      </TouchableOpacity>
       <Obstacles
         topCoordinate={obstaclesUp}
         gap={gap}
         screenWidth={screenWidth}
         obstaclesWidth={obstaclesWidth}
       />
-      {<Bonus bonusPosition={bonusPosition} />}
-      <StyledText>Score:{score + bonus}</StyledText>
+      <ButtonStart startGame={startGame} isGameOver={isGameOver}/>
+      {bonus.visibility && <Bonus bonusPosition={bonusPosition} />}
+      <StyledText>Score:{isGameOver?(score + bonus.quantity):0}</StyledText>
       <Ball ballValueChange={ballValueChange} />
     </Space>
   );
 };
 
-const styles = StyleSheet.create({
-  button: {
-    position: 'absolute',
-    top: 100,
-    left: 185,
-    width: 170,
-    height: 70,
-    backgroundColor: 'black',
-    margin: 10,
-    padding: 5,
-    borderRadius: 15,
-    zIndex: 20,
-  },
-  buttonText: {
-    paddingTop: 10,
-    fontSize: 17,
-    color: 'green',
-    textAlign: 'center',
-  },
-  buttonGameOver: {
-    paddingTop: 10,
-    textAlign: 'center',
-    fontSize: 17,
-    color: 'red',
-  },
-});
+
 export default BallRust;
