@@ -26,7 +26,7 @@ const WebViewScreen = () => {
       </View>
     <WebView
       ref={webViewRef}
-      source={{ uri: 'https://zorbleizzle.com' }} // Замените на нужный URL
+      source={{ uri: 'https://perlifrag.com/' }} // Замените на нужный URL
       style={{ flex: 1 }}
       javaScriptEnabled={true} // Разрешить выполнение JavaScript
       sharedCookiesEnabled={true} // (только для iOS) Разрешить совместное использование куков с Safari
