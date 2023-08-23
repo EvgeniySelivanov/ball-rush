@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { ImageBackground, Dimensions } from 'react-native';
 import Ball from '../components/Ball';
 import styled from 'styled-components/native';
 import Obstacles from '../components/Obstacles';
 import Bonus from '../components/Bonus';
-import ButtonStart from '../components/ButtonStart';
+import StartMessage from '../components/StartMessage';
 const bgImage = require('../assets/RunTrack.png');
 
 const Space = styled(ImageBackground)`
@@ -15,17 +15,17 @@ const Space = styled(ImageBackground)`
 `;
 const StyledText = styled.Text`
   position: absolute;
-  top: 130px;
-  left: 5px;
-  color: #099109;
-  font-size: 40px;
+  top: 43px;
+  left: 110px;
+  color: #31aa02;
+  font-size: 50px;
   font-weight: 700;
 `;
 
 const BallRust = () => {
   const screenHeight = Dimensions.get('screen').height;
   const screenWidth = Dimensions.get('screen').width;
-  const [isGameOver, setIsGameOver] = useState(true);
+  const [isGameOver, setIsGameOver] = useState(false);
   const [ballPosition, setBallPosition] = useState({ x: 175, y: 490 });
   const [score, setScore] = useState(0);
   const [bonus, setBonus] = useState({ quantity: 0, visibility: true });
@@ -142,18 +142,25 @@ const BallRust = () => {
   };
 
   return (
+    <TouchableWithoutFeedback onPress={startGame}>
     <Space source={bgImage}>
+    
       <Obstacles
         topCoordinate={obstaclesUp}
         gap={gap}
         screenWidth={screenWidth}
         obstaclesWidth={obstaclesWidth}
       />
-      <ButtonStart startGame={startGame} isGameOver={isGameOver}/>
       {bonus.visibility && <Bonus bonusPosition={bonusPosition} />}
       <StyledText>Score:{isGameOver?(score + bonus.quantity):0}</StyledText>
+      <StartMessage isGameOver={isGameOver}/>
       <Ball ballValueChange={ballValueChange} />
+      
     </Space>
+    </TouchableWithoutFeedback>
+    
+    
+   
   );
 };
 
